@@ -1,0 +1,60 @@
+[package]
+name = "bootbud"
+version = "0.1.0"
+authors = ["Sam Day <me@samcday.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.98"
+dioxus = { version = "0.6.0", features = ["logger"] }
+js-sys = "0.3.70"
+wasm-bindgen = "0.2.100"
+wasm-bindgen-futures = "0.4.50"
+web-sys = { version = "0.3.70", features = [
+    "DomException",
+    "Exception",
+    "Headers",
+    "Navigator",
+    "ReadableStream",
+    "ReadableStreamDefaultReader",
+    "Request",
+    "Response",
+    "Usb",
+    "UsbAlternateInterface",
+    "UsbConfiguration",
+    "UsbConnectionEvent",
+    "UsbDevice",
+    "UsbDeviceFilter",
+    "UsbDeviceRequestOptions",
+    "UsbDirection",
+    "UsbEndpoint",
+    "UsbEndpointType",
+    "UsbInterface",
+    "UsbInTransferResult",
+    "UsbOutTransferResult",
+    "Window",
+] }
+smoo_webusb = { path = "./smoo/webusb" }
+thiserror = "1.0.69"
+tracing = "0.1.41"
+futures = "0.3.31"
+gloo-utils = "0.2.0"
+wasm-streams = "0.4.2"
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
