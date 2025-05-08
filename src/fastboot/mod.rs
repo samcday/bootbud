@@ -1,8 +1,8 @@
 mod protocol;
 pub mod webusb;
 
-use std::{collections::HashMap, fmt::Display, io::Write};
 use futures::AsyncRead;
+use std::{collections::HashMap, fmt::Display, io::Write};
 use thiserror::Error;
 use tracing::{info, warn};
 use tracing::{instrument, trace};
@@ -46,7 +46,10 @@ pub struct Fastboot<Ops> {
 
 pub trait FastBootOps {
     async fn write_out(&mut self, buf: &mut [u8]) -> Result<usize, FastBootError>;
-    async fn write_out_stream<R: AsyncRead+Unpin>(&mut self, read: R) -> Result<usize, FastBootError>;
+    async fn write_out_stream<R: AsyncRead + Unpin>(
+        &mut self,
+        read: R,
+    ) -> Result<usize, FastBootError>;
     async fn read_in(&mut self, buf: &mut [u8]) -> Result<usize, FastBootError>;
 }
 
@@ -87,13 +90,9 @@ impl<Ops: FastBootOps> Fastboot<Ops> {
             trace!("Response: {:?}", resp);
             match resp {
                 FastBootResponse::Info(_) => (),
-                FastBootResponse::Data(_) => {
-                    return Err(FastBootError::FastbootUnexpectedReply)
-                }
+                FastBootResponse::Data(_) => return Err(FastBootError::FastbootUnexpectedReply),
                 FastBootResponse::Okay(value) => return Ok(value),
-                FastBootResponse::Fail(fail) => {
-                    return Err(FastBootError::FastbootFailed(fail))
-                }
+                FastBootResponse::Fail(fail) => return Err(FastBootError::FastbootFailed(fail)),
             }
         }
     }
@@ -129,21 +128,20 @@ impl<Ops: FastBootOps> Fastboot<Ops> {
                     } else {
                         info = Some(i);
                     }
-                },
+                }
                 FastBootResponse::Data(_) => {
                     return Ok(info);
                 }
-                FastBootResponse::Okay(_) => {
-                    return Err(FastBootError::FastbootUnexpectedReply)
-                }
-                FastBootResponse::Fail(fail) => {
-                    return Err(FastBootError::FastbootFailed(fail))
-                }
+                FastBootResponse::Okay(_) => return Err(FastBootError::FastbootUnexpectedReply),
+                FastBootResponse::Fail(fail) => return Err(FastBootError::FastbootFailed(fail)),
             }
         }
     }
 
-    pub async fn do_download<R: AsyncRead+Unpin>(&mut self, reader: R) -> Result<String, FastBootError> {
+    pub async fn do_download<R: AsyncRead + Unpin>(
+        &mut self,
+        reader: R,
+    ) -> Result<String, FastBootError> {
         let written = self.ops.write_out_stream(reader).await?;
         tracing::debug!("Wrote {} bytes", written);
         self.handle_responses().await
@@ -204,15 +202,11 @@ impl<Ops: FastBootOps> Fastboot<Ops> {
                     };
                     vars.insert(key.trim().to_string(), value.trim().to_string());
                 }
-                FastBootResponse::Data(_) => {
-                    return Err(FastBootError::FastbootUnexpectedReply)
-                }
+                FastBootResponse::Data(_) => return Err(FastBootError::FastbootUnexpectedReply),
                 FastBootResponse::Okay(_) => {
                     return Ok(vars);
                 }
-                FastBootResponse::Fail(fail) => {
-                    return Err(FastBootError::FastbootFailed(fail))
-                }
+                FastBootResponse::Fail(fail) => return Err(FastBootError::FastbootFailed(fail)),
             }
         }
     }
@@ -228,4 +222,3 @@ pub enum DownloadError {
     #[error(transparent)]
     Nusb(#[from] FastBootError),
 }
-

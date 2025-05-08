@@ -99,7 +99,7 @@ impl<'a> FastBootResponse {
             "INFO" => Ok(Self::Info(data.into())),
             "FAIL" => Ok(Self::Fail(data.into())),
             "DATA" => {
-                let offset =  u32::from_str_radix(data, 16)
+                let offset = u32::from_str_radix(data, 16)
                     .or(Err(FastBootResponseParseError::DataLength))?;
                 Ok(Self::Data(offset))
             }
