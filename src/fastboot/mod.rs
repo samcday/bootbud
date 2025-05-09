@@ -14,7 +14,7 @@ use protocol::{FastBootCommand, FastBootResponseParseError};
 #[derive(Debug, Error)]
 pub enum FastBootError {
     #[error("General error: {0}")]
-    Transfer(#[from] Box<dyn std::error::Error>),
+    Transfer(#[from] Box<dyn std::error::Error + Send + Sync>),
     #[error("Fastboot client failure: {0}")]
     FastbootFailed(String),
     #[error("Unexpected fastboot response")]

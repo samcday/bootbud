@@ -87,13 +87,13 @@ impl FastBootOps for FastbootWebUsb {
             self.dev
                 .transfer_out_with_u8_slice(self.output_ep, buf)
                 .map_err(|err| {
-                    let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+                    let err: gloo::utils::errors::JsError = err.try_into().unwrap();
                     FastBootError::Transfer(err.into())
                 })?,
         )
         .await
         .map_err(|err| {
-            let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+            let err: gloo::utils::errors::JsError = err.try_into().unwrap();
             FastBootError::Transfer(err.into())
         })
         .map(|res| {
@@ -126,7 +126,7 @@ impl FastBootOps for FastbootWebUsb {
                     .unwrap()
                     .await
                     .map_err(|err| {
-                        let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+                        let err: gloo::utils::errors::JsError = err.try_into().unwrap();
                         FastBootError::Transfer(err.into())
                     })
                     .map(|res| {
@@ -139,7 +139,7 @@ impl FastBootOps for FastbootWebUsb {
                 self.dev
                     .transfer_out_with_u8_slice(self.output_ep, &mut buf[..sz])
                     .map_err(|err| {
-                        let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+                        let err: gloo::utils::errors::JsError = err.try_into().unwrap();
                         FastBootError::Transfer(err.into())
                     })?,
             ));
@@ -151,7 +151,7 @@ impl FastBootOps for FastbootWebUsb {
                 .unwrap()
                 .await
                 .map_err(|err| {
-                    let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+                    let err: gloo::utils::errors::JsError = err.try_into().unwrap();
                     FastBootError::Transfer(err.into())
                 })
                 .map(|res| {
@@ -167,7 +167,7 @@ impl FastBootOps for FastbootWebUsb {
         JsFuture::from(self.dev.transfer_in(self.input_ep, buf.len() as _))
             .await
             .map_err(|err| {
-                let err: gloo_utils::errors::JsError = err.try_into().unwrap();
+                let err: gloo::utils::errors::JsError = err.try_into().unwrap();
                 FastBootError::Transfer(err.into())
             })
             .map(|res| {
